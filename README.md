@@ -1,3 +1,4 @@
+<pre>
 Sub MacroUpdateAN()
         
     Dim rc As VbMsgBoxResult
@@ -22,6 +23,7 @@ Sub MacroUpdateAN()
         SeqNo = 1
         Const C_SEQ_NO As Long = 1
         
+        
         Dim TargetRowNo As Long
         Dim NextRowNo As Long
         
@@ -35,10 +37,11 @@ Sub MacroUpdateAN()
         
             ' シーケンスが初期値(C_SEQ_NO:1)の場合 ※初回書き込みのみ実行される処理
             If SeqNo = C_SEQ_NO Then
-                ' AOに0か空文字以外の場合は、処理をスキップ
+                ' AOに0か空文字の場合は、処理をスキップ
                 If Cells(Row, C_AO_COLUMN) = "" Or Cells(Row, C_AO_COLUMN) = "0" Then
                     GoTo CONTINUE:
                 End If
+                ' 値が有効値の場合シーケンスを書き込む
                 Cells(Row, C_AN_COLUMN) = SeqNo
                 SeqNo = SeqNo + 1
                 GoTo CONTINUE:
@@ -50,9 +53,13 @@ Sub MacroUpdateAN()
                 GoTo CONTINUE:
             End If
             
-            ' AOのターゲットの値が0の場合、処理をスキップする
+            ' AOのターゲットの値が0の場合
             If Cells(Row, C_AO_COLUMN) = "0" Then
-                ' AOのターゲットの値と次の値を比較し、次の値の方が値が小さい場合、シーケンスを書き込む
+                ' AOの次の行が空文字の場合、処理をスキップする
+                If Cells(Row + 1, C_AO_COLUMN) = "" Then
+                    GoTo CONTINUE:
+                End If
+                ' AOのターゲットの値と次の行の値を比較し、次の行の値の方が小さい場合、次の行のAN列にシーケンスを書き込む
                 If TargetRowNo > Cells(Row + 1, C_AO_COLUMN) Then
                     Cells(Row + 1, C_AN_COLUMN) = SeqNo
                     SeqNo = SeqNo + 1
@@ -61,13 +68,13 @@ Sub MacroUpdateAN()
             End If
             TargetRowNo = Cells(Row, C_AO_COLUMN)
             
-            ' AOの次のターゲットの値が空文字 または0の場合、処理をスキップする
-            If Cells(Row + 1, C_AO_COLUMN) = "" Then
+            ' AOの次の行の値が空文字 または 0の場合、処理をスキップする
+            If Cells(Row + 1, C_AO_COLUMN) = "" Or Cells(Row + 1, C_AO_COLUMN) = "0" Then
                 GoTo CONTINUE:
             End If
             NextRowNo = Cells(Row + 1, C_AO_COLUMN)
             
-            ' AOのターゲットの値と次の行の値を比較し、次の行の値の方が値が小さい場合、シーケンスを書き込む
+            ' AOのターゲットの値と次の行の値を比較し、次の行の値の方が小さい場合、次の行のAN列にシーケンスを書き込む
             If TargetRowNo > NextRowNo Then
                 Cells(Row + 1, C_AN_COLUMN) = SeqNo
                 SeqNo = SeqNo + 1
@@ -77,3 +84,5 @@ CONTINUE:
         MsgBox "AN列の更新が完了しました。"
     End If
 End Sub
+
+</pre>
